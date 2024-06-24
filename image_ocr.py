@@ -13,6 +13,4 @@ def image_ocr(img):
   # -- PENGENALAN TEKS
   text = pytesseract.image_to_string(img, config=config)
 
-  print(text)
-
   return text

@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+import os
 
 from image_processing import preprocess_image
 from image_ocr import image_ocr
-import os
 
 from save_to_docx import save_as_docx
 from save_to_pdf import save_as_pdf
@@ -47,12 +47,15 @@ def upload_file():
       output_format = request.form.get('format', 'docx')
       output_filename = f'output.{output_format}'
 
+      # Cek output_format yang di input(docx/pdf/txt) dan menyimpan teks OCR ke dalam format tersebut
       if output_format == 'docx':
           save_as_docx(text, output_filename)
       elif output_format == 'pdf':
           save_as_pdf(text, output_filename)
       elif output_format == 'txt':
           save_as_text(text, output_filename)
+    
+      # Jika format tidak ditemukkan maka akan diberikan error unsupported output format
       else:
           return jsonify({'error': 'Unsupported output format'}), 400
 
@@ -60,7 +63,7 @@ def upload_file():
       return send_file(output_filename, as_attachment=True)
 
   finally:
-      # Hapus file upload setelah selesai
+      # Jika proses upload sudah selesai dan sudah mengembalikkan teks digital hasil OCR, maka hapus file upload setelah selesai
       if os.path.exists(upload_path):
           os.remove(upload_path)
 
